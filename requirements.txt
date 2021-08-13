@@ -1,0 +1,8 @@
+pandas
+numpy
+tqdm
+sklearn
+efficient_apriori
+implicit
+scipy
+catboost

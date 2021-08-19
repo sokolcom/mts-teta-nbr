@@ -6,3 +6,4 @@ efficient_apriori
 implicit
 scipy
 catboost
+streamlit

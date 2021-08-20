@@ -7,10 +7,12 @@ def img2bytes(path):
     return base64.b64encode(img_bytes).decode()
 
 
-ITEMS_AMOUNT = 25
+ITEMS_AMOUNT = 60
 ITEMS_PER_ROW = 5
 
 DEFAULT_ITEMS_AMOUNT = 3
+
+ITEMS_MAPPING = "../data/item_mapping.json"
 
 REPO_LINK = "https://github.com/sokolcom/mts-teta-nbr"
 

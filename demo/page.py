@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 import config as cfg
-from utils import get_items_mapping
+import utils
 
 
 def config_page():
@@ -54,8 +54,8 @@ def render_top(items_mapping, basket=[]):
             widget_basket = st.multiselect("Select items", items_title, items_title[:cfg.DEFAULT_ITEMS_AMOUNT])
             btn_submit_basket = st.form_submit_button(label="Create basket")
 
-        # figure = [1, 2, 3]
-        # layout[1].plot_placeholder.plotly_chart(figure, use_container_width=True)
+        metrics_gauge = utils.visualize_metrics(cfg.STUB_METRICS)
+        layout[1].plotly_chart(metrics_gauge, use_container_width=True)
 
 
 def render_mid(items_mapping):
@@ -86,17 +86,17 @@ def render_bot(items_mapping, basket=[]):
             with items[i % cfg.ITEMS_PER_ROW].container():
                 st.image(
                     items_mapping[items_ids[i]]["img"],
-                    caption=items_mapping[items_ids[i]]["title"]
+                    caption=items_mapping[items_ids[i]]["title"],
+                    width=175
                 )
                 # st.number_input("Qty", min_value=0, value=0, step=1)
                 # btn_add_item = st.form_submit_button(label="Add to basket")
                 st.markdown("---")
 
 
-
 def render_body():
     """Render main body of the page (interactive form, items list)"""
-    items_mapping = get_items_mapping(cfg.ITEMS_MAPPING)
+    items_mapping = utils.get_items_mapping(cfg.ITEMS_MAPPING)
 
     welcome()
     render_top(items_mapping)

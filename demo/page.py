@@ -3,6 +3,7 @@ import streamlit as st
 
 import config as cfg
 import utils
+from models import pick_model
 
 
 def config_page():
@@ -34,19 +35,17 @@ def render_sidebar():
         st.markdown(cfg.DESCRIPTION)
     st.sidebar.markdown("---")
 
-    st.sidebar.radio("Algorithm:", ["TIFU KNN", "Apriori", "Popularity-based"])
-    st.sidebar.markdown("---")
-
-    st.sidebar.button("Visualization?")
+    model = pick_model()
     st.sidebar.markdown("---")
 
     st.sidebar.markdown(cfg.HTML_CREDITS, unsafe_allow_html=True)
+
+    return model
         
 
-def render_top(items_mapping, basket=[]):
+def render_top(items_mapping):
     """Render top container (bcreate basket)"""
     items_title = [items_mapping[i]["title"] for i in list(items_mapping)]
-    # basket = basket or items_title[:cfg.DEFAULT_ITEMS_AMOUNT]
 
     with st.container():
         layout = st.columns((2, 3))
@@ -74,7 +73,7 @@ def render_mid(items_mapping):
         st.markdown("---")
 
 
-def render_bot(items_mapping, basket=[]):
+def render_bot(items_mapping):
     """Render bottom container (item list)"""
     items_ids = list(items_mapping)
 
@@ -87,10 +86,8 @@ def render_bot(items_mapping, basket=[]):
                 st.image(
                     items_mapping[items_ids[i]]["img"],
                     caption=items_mapping[items_ids[i]]["title"],
-                    width=175
+                    width=cfg.ITEM_IMG_WIDTH
                 )
-                # st.number_input("Qty", min_value=0, value=0, step=1)
-                # btn_add_item = st.form_submit_button(label="Add to basket")
                 st.markdown("---")
 
 

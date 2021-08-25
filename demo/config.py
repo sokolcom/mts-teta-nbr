@@ -7,6 +7,11 @@ def img2bytes(path):
     return base64.b64encode(img_bytes).decode()
 
 
+MODEL_TIFUKNN = "TIFU KNN"
+MODEL_POPULAR = "Popularity-based"
+
+ITEM_IMG_WIDTH = 175
+
 ITEMS_AMOUNT = 60
 ITEMS_PER_ROW = 5
 

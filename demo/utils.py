@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 
 
 from plotly.subplots import make_subplots
@@ -12,6 +13,18 @@ def get_items_mapping(filepath):
         mapping = json.load(fp)
 
     return mapping
+
+def itemtitle_to_itemdict(filepath, basket_todisp):
+    """Decode list if item id to catalogue items (dict), in analogue as we extracted from json"""
+    mapping = {}
+    
+    with open(filepath, "r") as fp:
+        mapping0 = json.load(fp)    #know the whole dictionary 
+        df0 = pd.DataFrame(mapping0).transpose()
+        itemlist = df0[df0['title'].isin(basket_todisp)]
+        itemlist_id = itemlist.index
+        mapping = {my_key: mapping0[my_key] for my_key in itemlist_id}
+        return mapping
 
 
 def visualize_metrics(metrics):

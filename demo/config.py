@@ -19,6 +19,8 @@ DEFAULT_ITEMS_AMOUNT = 3
 
 ITEMS_MAPPING = "../data/item_mapping.json"
 
+ITEMS_MAPPING_TIFU = "../data/item_mapping_tifu.json"
+
 REPO_LINK = "https://github.com/sokolcom/mts-teta-nbr"
 
 HTML_CREDITS = \

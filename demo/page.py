@@ -63,7 +63,7 @@ def render_top(items_mapping):
         return btn_submit_basket, basket_bought
 
 def render_mid1(items_mapping, btn_submit_basket):
-    """Render middle container (recommendations)"""
+    """Render middle container (previous basket-based recommendations)"""
     items_ids = list(items_mapping)
 
     with st.container():
@@ -85,7 +85,7 @@ def render_mid1(items_mapping, btn_submit_basket):
 
 
 def render_mid2(items_mapping, btn_submit_basket):
-    """Render middle container (recommendations)"""
+    """Render middle container (last cart)"""
     items_ids = list(items_mapping)
 
     with st.container():
@@ -135,7 +135,7 @@ def render_body():
         items_mapping_personal = utils.itemtitle_to_itemdict(cfg.ITEMS_MAPPING, basket_bought)
     else:
         items_mapping_personal = utils.get_items_mapping(cfg.ITEMS_MAPPING)
-    render_mid1 (items_mapping_personal, btn_submit_basket) #Recommendations
+    render_mid1 (items_mapping_personal, btn_submit_basket) #previous basket-based  Recommendations
     render_mid2 (items_mapping_personal, btn_submit_basket) #Recommendations
     render_bot(items_mapping) #All items in the shop
 

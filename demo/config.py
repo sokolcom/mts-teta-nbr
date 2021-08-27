@@ -18,7 +18,7 @@ ITEMS_PER_ROW = 5
 DEFAULT_ITEMS_AMOUNT = 3
 
 ITEMS_MAPPING = "../data/item_mapping.json"
-
+RECOM_BASE_TIFU_FULL = '../data/recom_base_tifu_full.csv'
 ITEMS_MAPPING_TIFU = "../data/item_mapping_tifu.json"
 
 REPO_LINK = "https://github.com/sokolcom/mts-teta-nbr"

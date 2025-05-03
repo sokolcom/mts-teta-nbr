@@ -29,7 +29,7 @@ The ideal is to predict the user's next basket with perfect accuracy. The F1 thr
 The dataset comes from a [Kaggle competition](https://www.kaggle.com/c/sbermarket-internship-competition/).
 It consists of three columns: *user_id*, *order_completed_at*, and *cart*.
 
-  | user_id | order_completed_at   | cart
+ㅤ| user_id | order_completed_at   | cart
 --|---------|---------------------|-----
 0 | 2       | 2015-03-22 09:25:46 | 399
 1 | 2       | 2015-03-22 09:25:46 | 14

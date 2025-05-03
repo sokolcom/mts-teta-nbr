@@ -1,8 +1,7 @@
 import json
 
-
-from plotly.subplots import make_subplots
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 
 def get_items_mapping(filepath):
@@ -18,7 +17,9 @@ def visualize_metrics(metrics):
     figure = make_subplots(
         rows=1,
         cols=2,
-        specs=[[{"type": "indicator"}, {"type": "indicator"}]]  # for the second gauge (perhaps @k)
+        specs=[
+            [{"type": "indicator"}, {"type": "indicator"}]
+        ],  # for the second gauge (perhaps @k)
     )
 
     figure.add_trace(
@@ -31,7 +32,7 @@ def visualize_metrics(metrics):
             delta={"reference": metrics["prev_f1"]},
         ),
         row=1,
-        col=2
+        col=2,
     )
 
     return figure

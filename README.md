@@ -1,95 +1,90 @@
 <h1 align="center">Next Basket Recommendation</h1>
-<p align="center"><b>Сервис для предсказания следующей покупки пользователя</b></p>
+<p align="center"><b>A service for predicting a user's next purchase items</b></p>
 
-## 1. Цель
-Бизнес-цель - повышение дохода интернет/магазинов и маркетплейсов за счет увеличения числа покупок старыми пользователями.
-Цель сервиса - по историческим данным о покупках пользователей *наиболее точно* предсказывать товары, из которых будет состоять следующая покупка каждого пользователя.  Это может как увеличить разнообразие в его корзине и следовательно повысить ее стоимость, порекомендовав товары, о которых он не знал ранее, так и напомнить о забытых товарах, а также повысить лояльность пользователя к сервису за счет упрощения сбора корзины.  
-Такие предсказания могут быть использованы:
-* 🖼 Для контекстной рекламы
-* 📧 Для составления персонализированных рассылок и акций
-* 🛍 Для предложения конкретного набора товаров пользователю с целью ускорить процесс совершения покупки
-* 🛒 Для указания возможных для добавления в корзину товаров перед оплатой
+## 1. Objective
+The business objective is to increase the revenue of online stores and marketplaces by encouraging more repeat purchases from existing users.
+This service leverages historical purchase data to *accurately predict* which items will be included in each user's next basket. The recommendations can increase basket diversity and value by suggesting new or forgotten items, and also improve user loyalty by simplifying the shopping process.
 
-Данная задача из сферы продаж актуальна в связи с важной ролью интернет магазинов в жизни человека. Особенно в последние два года возможность покупать вещи и продукты из дома в несколько нажатий стала как никогда популярной и нужной.
+Predictions can be used for:
+* 🖼 Contextual advertising
+* 📧 Personalized mailings and promotions
+* 🛍 Suggesting tailored product sets to speed up purchases
+* 🛒 Recommending additional items before checkout
 
-## 2. Математическая постановка задачи
-Для соответствия оценки модели с (бизнес-)целью проекта будет удобно использовать следующий подход.  
-Для каждой пары пользователя и товара (из всех, которые он покупал ранее) итоговый алгоритм выдаст **1** или **0** в зависимости от того, купит ли этот пользователь этот товар в следующий раз или нет.    
+This problem is especially relevant given the growing importance of online shopping. In recent years, the ability to buy goods and groceries from home with just a few clicks has become more popular and essential than ever.
 
-Сама по себе задача относится к классу рекомендательных систем (RecSys). Модель получает для каждого пользователя набор продуктов, поэтому можно сказать, что решается задача ранжирования. Однако полагаем, что в данном случае не важен порядок отображения рекомендаций - допустим, товары предлагаются пользователю в случайном, меняющемся при обновлении страницы порядке, - а важно только их попадание в рекомендуемую корзину.
+## 2. Problem Formulation
+To align model evaluation with business goals, we use the following approach:
+For each user-item pair (from all items previously purchased by the user), the algorithm predicts **1** or **0** depending on whether the user will buy this item in their next purchase.
 
-В роли метрики качества была выбрана **F1-score**. Она учитывает в себе как точность (_Precision_), так и полноту (_Recall_) предсказаний, являясь их средним гармоническим, что позволяет не делать выбор в пользу одной из них.  
+This is a recommender system (RecSys) problem. The model outputs a set of products for each user, making it a ranking task. However, the order of recommendations is not important—only whether an item is included in the recommended basket.
 
-При этом заметим, что, несмотря на использование в алгоритме параметров `top_k` и подобных, использование метрик _Precision@k_ и/или _Recall@k_ не приминимо к задаче, так как размер корзин пользователей разный, и применение подобных метрик свело бы текущую задачу к "обычным рекомендациям".
+The main evaluation metric is the **F1-score**, which balances precision and recall as their harmonic mean.
 
-Идеал, к которому необходимо стремиться - абсолютно точно предсказывать следующую корзину пользователя. Определение порогового значения F1 как меры успешности модели может быть сделано после первых АВ-тестов, дающих возможность оценить экономический эффект модели (см.п.6) и его связь с F1.
+Note: Although the algorithm may use parameters like `top_k`, metrics such as _Precision@k_ or _Recall@k_ are not suitable here, since basket sizes vary and such metrics would reduce the problem to standard recommendations.
 
-## 3. Данные
-Датасет был взят из [Kaggle соревнования](https://www.kaggle.com/c/sbermarket-internship-competition/).
-Он представляет из себя таблицу с тремя колонками - *user_id*, *order_completed_at* и *cart*.
-  ᅠ |	user_id | order_completed_at | cart
---|---------|--------------------|-----
-0 |	2	| 2015-03-22 09:25:46	| 399
-1	| 2	| 2015-03-22 09:25:46	| 14
-2	| 2	| 2015-03-22 09:25:46	| 198
-3	| 2	| 2015-03-22 09:25:46	| 88
-4	| 2 |	2015-03-22 09:25:46	| 157  
+The ideal is to predict the user's next basket with perfect accuracy. The F1 threshold for model success can be set after initial A/B tests, which will help assess the model's economic impact (see section 6).
 
-Здесь *cart* - id небольшой категории товаров, но модель может работать и с данными, где последняя колонка содержит id конкретных товаров.  
+## 3. Data
+The dataset comes from a [Kaggle competition](https://www.kaggle.com/c/sbermarket-internship-competition/).
+It consists of three columns: *user_id*, *order_completed_at*, and *cart*.
 
-Всего в датасете **3123064** записей о покупках **20000** пользователей. Временной диапазон данных: с марта 2015 года по сентябрь 2020 года.
+  | user_id | order_completed_at   | cart
+--|---------|---------------------|-----
+0 | 2       | 2015-03-22 09:25:46 | 399
+1 | 2       | 2015-03-22 09:25:46 | 14
+2 | 2       | 2015-03-22 09:25:46 | 198
+3 | 2       | 2015-03-22 09:25:46 | 88
+4 | 2       | 2015-03-22 09:25:46 | 157
 
-## 4. Варианты решения задачи
-В рамках исследования были опробованы несколько подходов:
-* Базовые модели - `1. Baselines.ipynb`
-    * Рекомендовать топ популярных товаров
-    * Рекомендовать топ популярный товаров соответствующего пользователя
-    * Рекомендовать такие же товары, как пользователь купил в последний раз
-* Продвинутая агрегация исторических данных (**лучший результат**) - `3. TIFU KNN.ipynb`
-* Решение на основе классификации при помощи градиентного бустинга над решающими деревьями - `4. ML Solution.ipynb`
+Here, *cart* is the ID of a product category, but the model can also work with data where this column contains specific product IDs.
 
-Подробнее о каждом варианте решения можно узнать в соответствующем ноутбуке.
+The dataset contains **3,123,064** purchase records for **20,000** users, covering March 2015 to September 2020.
 
-Из не рассмотренных вариантов стоит отметить нейросетевой подход DREAM, который требует гораздо больших вычислительных и временных ресурсов, но по результатам публичных исследований выдает результаты меньше, чем подход TIFU KNN. Дополнительно можно рассматривать различные подходы, применимые к типичным задачам в рекомендательных системах.
+## 4. Solution Approaches
+Several approaches were explored:
+* Baseline models - `1. Baselines.ipynb`:
+    * Recommend the most popular items overall
+    * Recommend the most popular items for the user
+    * Recommend the same items as in the user's last purchase
+* Advanced aggregation of historical data (**best result**) - `3. TIFU KNN.ipynb`
+* Classification using gradient boosting over decision trees - `4. ML Solution.ipynb`
 
-Дополнительно в ноутбуке `2. Apriori.ipynb` исследуется поиск закономерностей в покупках для поиска комплиментарных товаров.  
+See the corresponding notebooks for details on each approach.
 
-## 5. Итоговая модель и результат
-Лучшим решением оказалась вариация [алгоритма TIFU KNN](https://arxiv.org/pdf/2006.00556.pdf).
-1. Максимальный (средний по трем последним покупкам) результат F1: _bestScore_ = **0.39744**
-2. Прирост по сравнению с baseline моделями:
-    - User last cart: **+0.069** (0.32841)  
-    - Top personal recs: **+0.0247** (0.37277) / **+0.073** (0.32415)  
-    - Top global recs: **+0.0220** (0.37593) / **+0.331** (0.36432)  
-3. Валидация модели производилась при помощи проверки алгоритма на последних, предпоследних и предпредпоследних покупках пользователей из датасета.  
-Среднеквадратичное (стандартное) отклонение по трем последним покупкам **σ = 0.013**  
-Была замечена тендеция уменьшения значения метрики при проверке алгоритма на более ранних данных: с увеличением `level` (см. `3. TIFU KNN.ipynb`) происходило уменьшение метрики.   
-Это может быть связано с:
-    - Уменьшением данных для "обучения" - чем более ранние покупки берем для проверки, тем больше данных отрезаем
-    - Уменьшением количества задействованных товаров - часть товаров была использована впервые лишь в последних покупках
-    - Уменьшением количества пользователей, так как алгоритм использует поиск ближайших соседей для каждого пользователя
-4. Строго говоря, итоговое решение представляет из себя алгоритм агрегации данных о покупках пользователей. В связи с этим нельзя выделить важность признаков.
-5. Слабым сегментом модели являются новые пользователи, которые совершили очень мало покупок или не совершали совсем. В таких случаях можно рассматривать использование baseline моделей для рекомендации подобным пользователям просто популярных товаров.
-6. Вероятно, сильным сегментом модели являются пользователи с большой историей схожих между собой покупок.
-7. О деградации модели:  
-В среднем модель, чтобы не падать в качестве ниже значения метрики _bestScore_ - σ, требует переобучения после 2-х покупок большинства пользователей.  
-Cредний интервал между покупками всех пользователей в датасете составляет 2 дня и 5 часов.  
-Таким образом, максимальный срок использования одной модели, после которого она начинает падать в качестве больше, чем на σ, составляет около 4.5 дней. При наличии возможностей переобучать модель следует примерно раз в 2 дня.
+Other approaches, such as the neural network-based DREAM method, were not implemented due to high computational requirements and, according to public research, lower performance compared to TIFU KNN. Other standard recommender system methods may also be considered.
 
-## 6. Оценка экономического эффекта
-Произвести офлайн оценку экономического эффекта данной задачи достаточно трудно, т.к. доп. прибыль будет только от тех товаров, которые пользователь сам не купил бы (и не увидел/вспомнил), а с данной рекомендательной системой - купит. А мы располагаем историческими данными только о реальных покупках.
+Additionally, the `2. Apriori.ipynb` notebook explores association rule mining to find complementary products.
 
-Таким образом, необходимо А/B тестирование в каждом из направлений, где может быть использован этот сервис. В ходе теста могут оцениваться такие экономические показатели, как:
-- средний чек
-- клики
-- конверсия в заказ
-и т.д.
+## 5. Final Model and Results
+The best solution was a variation of the [TIFU KNN algorithm](https://arxiv.org/pdf/2006.00556.pdf):
+1. Maximum (average over the last three purchases) F1-score: _bestScore_ = **0.39744**
+2. Improvement over baseline models:
+    - User last cart: **+0.069** (0.32841)
+    - Top personal recs: **+0.0247** (0.37277) / **+0.073** (0.32415)
+    - Top global recs: **+0.0220** (0.37593) / **+0.331** (0.36432)
+3. Model validation was performed on the last three purchases of users. The standard deviation for these is **σ = 0.013**. A trend of decreasing F1 was observed when validating on earlier purchases, likely due to:
+    - Less training data (earlier purchases mean less history)
+    - Fewer items (some items only appear in later purchases)
+    - Fewer users (the algorithm uses nearest neighbors for each user)
+4. The final solution is an aggregation algorithm, so feature importance is not defined.
+5. The model performs less well for new users with few or no purchases; for them, baseline models recommending popular items are preferable.
+6. The model works best for users with a long history of similar purchases.
+7. Model degradation: To maintain quality above _bestScore_ - σ, the model should be retrained after every two purchases for most users. The average interval between purchases is 2 days and 5 hours, so the model should ideally be retrained every ~2 days.
 
-В качестве совершенствования модели для повышения экономического эффекта можно при принятии решения о включении товара в рекомендации учитывать его маржинальность.
+## 6. Economic Impact
+It is difficult to assess the economic impact offline, since additional profit comes only from items the user would not have bought without the recommender system. We only have data on actual purchases.
 
-## 7. Демо
+Therefore, A/B testing is required wherever this service is used. During testing, the following metrics can be evaluated:
+- Average order value
+- Clicks
+- Conversion rate
 
-### Запуск
+To further improve economic impact, consider product margin when deciding which items to recommend.
+
+## 7. Demo
+
+### Launch
 ```bash
 git clone https://github.com/exsandebest/next-basket-recommendation.git
 cd mts-teta-nbr/data
@@ -98,8 +93,8 @@ cd ../demo
 streamlit run main.py
 ```
 
-### Использование
-1. Выбираем модель и параметры
-2. Вводим *id* пользователя (1-19999)
-3. Можем сами собрать этому пользователю ещё одну корзину для уточнения рекомендаций
-4. Получаем рекомендации
+### Usage
+1. Select the model and parameters
+2. Enter the *user id* (1-19999)
+3. Optionally, manually assemble another basket for this user to refine recommendations
+4. Get recommendations
